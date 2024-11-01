@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PokemonCard from "./PokemonCard";
 
 function PokemonList() {
@@ -6,9 +6,18 @@ function PokemonList() {
   const handleCardClick = (pokemon) => {
     setSelectedPokemon(pokemon)
   }
+// https://github.com/xxmgkxx/pokedex2014
 
+  const [pokemonList, setPokemonList] = useState([])
+
+  useEffect(() => {
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+    .then((response) => response.json())
+    .then((data) => { setPokemonList (data.results)})
+    .catch((error) => console.error("Erro ao buscar os dados", error));
+  }, [])
+  return(
     <div>
-      <input type="text" onChange={handlePokemonNameInput()}/>
       {selectedPokemon ? (
         <div>
           <h2>Detalhes do Pokemon</h2>
@@ -22,28 +31,16 @@ function PokemonList() {
            Voltar </button>
         </div>
       ) : (
-    <>
-        <PokemonCard
-          name="Bulbasaur"
-          image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
-          type="Grass/Poison"
-          onClick={() => handleCardClick({
-            name: 'Bulbasaur',
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-            type: "Grass/Poison"
-          })}
-      />
-      <PokemonCard
-          name="Pikachu"
-          image="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
-          type="Electric"
-          onClick={() => handleCardClick({
-            name: 'Pikachu',
-            image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-            type: "Eletric"
-          })}
-      />
-    </>
+        <div className="pokemon-list">
+            {pokemonList.map((pokemon, index) => (
+                <PokemonCard
+                  key={index}
+                  name={pokemon.name}
+                  image={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`}
+                  type="Desconhecido"
+                  />
+            ))}
+        </div>
       ) }
 
 </div>
